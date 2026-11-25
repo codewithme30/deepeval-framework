@@ -1,0 +1,114 @@
+name: DeepEval evals
+
+# Three cadences:
+#   pull request  -> smoke tests only (cheap, fast feedback)
+#   nightly       -> the full suite except red teaming and benchmarks
+#   weekly        -> red teaming + benchmarks (the expensive, slow ones)
+# Secrets: OPENAI_API_KEY (required for LLM-judged tests), CONFIDENT_API_KEY (optional dashboard).
+# Pull requests from forks get no secrets: judge-based tests then skip with a clear message
+# and only the key-free tests run, so the check stays green.
+
+on:
+  pull_request:
+  schedule:
+    - cron: "0 2 * * *"   # nightly, 02:00 UTC
+    - cron: "0 3 * * 0"   # weekly, Sundays 03:00 UTC
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Which suite to run"
+        type: choice
+        options: [smoke, nightly, weekly]
+        default: smoke
+
+concurrency:
+  group: evals-${{ github.ref }}-${{ github.event.schedule || github.event_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  CONFIDENT_API_KEY: ${{ secrets.CONFIDENT_API_KEY }}
+  DEEPEVAL_TELEMETRY_OPT_OUT: "YES"
+  DEEPTEAM_TELEMETRY_OPT_OUT: "YES"
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  smoke:
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.suite == 'smoke')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Smoke tests (stub mode)
+        run: deepeval test run tests/ -m smoke
+        env:
+          APP_MODE: stub
+          PYTEST_ADDOPTS: "--junitxml=reports/junit-smoke.xml"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports-smoke
+          path: reports/
+          if-no-files-found: ignore
+
+  nightly:
+    if: github.event.schedule == '0 2 * * *' || (github.event_name == 'workflow_dispatch' && inputs.suite == 'nightly')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Full suite, excluding benchmarks and red teaming (stub mode, 4 workers)
+        run: deepeval test run tests/ -m "not benchmark and not redteam" -n 4
+        env:
+          APP_MODE: stub
+          DEEPEVAL_RESULTS_FOLDER: reports/deepeval
+          PYTEST_ADDOPTS: "--junitxml=reports/junit-nightly.xml"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports-nightly
+          path: reports/
+          if-no-files-found: ignore
+
+  weekly:
+    if: github.event.schedule == '0 3 * * 0' || (github.event_name == 'workflow_dispatch' && inputs.suite == 'weekly')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Red teaming (stub app, real attacks)
+        run: deepeval test run tests/test_09_red_teaming.py -m redteam
+        env:
+          APP_MODE: stub
+          PYTEST_ADDOPTS: "--junitxml=reports/junit-redteam.xml"
+      - name: Benchmarks (live model)
+        if: always()
+        run: deepeval test run tests/test_10_benchmarks.py -m benchmark
+        env:
+          APP_MODE: live
+          RUN_BENCHMARKS: "1"
+          PYTEST_ADDOPTS: "--junitxml=reports/junit-benchmarks.xml"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports-weekly
+          path: reports/
+          if-no-files-found: ignore

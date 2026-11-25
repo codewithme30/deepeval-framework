@@ -1,0 +1,21 @@
+# Pinned for reproducibility. Tested with Python 3.11.
+deepeval==4.3.5
+deepteam==1.0.10
+pytest==9.2.0
+openai==3.59.0
+python-dotenv==1.2.4
+pyyaml==6.0.4
+pydantic==2.14.4
+# deepteam 1.0.10 imports sentry_sdk without declaring it, and breaks on sentry-sdk 3.x
+# (removed `profiles_sample_rate`). Pin the last 2.x release.
+sentry-sdk==2.76.0
+# Needed by Synthesizer.generate_goldens_from_docs (document chunking); deepeval does not install them.
+chromadb==1.5.9
+langchain-community==0.4.2
+langchain-text-splitters==1.2.0
+tiktoken==0.14.0
+# Optional, only for the combined RAGAS metric in test_02 (test is skipped without them):
+#   pip install ragas datasets langchain-openai
+# Needed by EvaluationDataset.add_goldens_from_csv_file (pandas) and the benchmarks (datasets; 4.x because deepeval caps click<8.4)
+pandas==3.1.1
+datasets==4.8.5

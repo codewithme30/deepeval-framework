@@ -1,0 +1,45 @@
+[
+  {
+    "input": "What is the standard deductible for auto collision claims?",
+    "expected_output": "The standard deductible for auto collision claims is $500. A lower $250 deductible is available on some auto policies for a higher premium.",
+    "context": [
+      "The standard deductible for auto collision and comprehensive claims is $500. A lower deductible of $250 is available on some auto policies for a higher premium."
+    ]
+  },
+  {
+    "input": "How long do I have to report a claim?",
+    "expected_output": "You should report a claim as soon as possible and no later than 30 days after the incident.",
+    "context": [
+      "Report a claim as soon as possible and no later than 30 days after the incident."
+    ]
+  },
+  {
+    "input": "How much does rental car reimbursement pay?",
+    "expected_output": "Rental car reimbursement pays up to $40 per day for a maximum of 30 days, as long as rental coverage is on your policy.",
+    "context": [
+      "Rental car reimbursement pays up to $40 per day for a maximum of 30 days. Rental coverage must be on your policy to be used."
+    ]
+  },
+  {
+    "input": "What happens after I report a claim?",
+    "expected_output": "An adjuster contacts you within 2 business days and reviews your photos, estimates and any police report. A coverage decision is aimed for within 15 business days of receiving all documents, and approved claims are paid within 5 business days.",
+    "context": [
+      "After you report a claim, an adjuster contacts you within 2 business days.",
+      "Acme Insurance aims to make a coverage decision within 15 business days of receiving all documents. Once a claim is approved, payment is issued within 5 business days."
+    ]
+  },
+  {
+    "input": "Is flood damage covered by my home policy?",
+    "expected_output": "No. Flood damage is excluded from home policies, but flood insurance is available separately through a government-backed program.",
+    "context": [
+      "Flood damage is not covered by auto or home policies. Flood insurance is available separately through a government-backed program."
+    ]
+  },
+  {
+    "input": "How long is the grace period after a missed premium payment?",
+    "expected_output": "There is a 10 day grace period after a missed premium payment. Coverage continues during the grace period but lapses if payment is not received by its end.",
+    "context": [
+      "A grace period of 10 days applies after a missed premium payment; coverage continues during the grace period but lapses if payment is not received by its end."
+    ]
+  }
+]

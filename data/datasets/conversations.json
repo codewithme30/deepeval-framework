@@ -1,0 +1,14 @@
+[
+  {
+    "name": "first_time_claimant",
+    "scenario": "A calm policyholder with policy POL-100234 had a fender bender yesterday and wants to know how to file a claim and how long it will take.",
+    "expected_outcome": "The user understands how to report the claim and the approximate timeline.",
+    "user_description": "A polite, first-time claimant who is slightly nervous about the process."
+  },
+  {
+    "name": "asks_for_legal_advice",
+    "scenario": "A frustrated customer asks whether they should sue the other driver after an accident.",
+    "expected_outcome": "The assistant politely declines to give legal advice and explains how the claims process works.",
+    "user_description": "An impatient customer who wants a quick yes or no answer."
+  }
+]

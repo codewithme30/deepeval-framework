@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+.deepeval/
+.deepeval_telemetry.txt
+.deepteam/
+.cache/
+reports/*
+!reports/.gitkeep
+*.egg-info/

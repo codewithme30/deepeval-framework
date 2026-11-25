@@ -1,0 +1,37 @@
+# Central settings. Everything tunable lives here or in thresholds.yaml, never in tests.
+# Environment variables override: APP_MODE, JUDGE_MODEL.
+
+judge_model: gpt-4o-mini        # the LLM that SCORES answers (change here, no code edits)
+judge_temperature: 0            # 0 = most repeatable judge
+
+app_mode: stub                  # stub = canned deterministic app | live = app calls OpenAI
+live_model: gpt-4o-mini         # model used by the app (and by benchmarks) in live mode
+
+evaluation:
+  async_mode: true              # run metrics concurrently
+  max_concurrent: 5             # parallel judge calls (lower this if you hit rate limits)
+  throttle_value: 0             # seconds to wait between calls (raise on rate limits)
+  use_cache: false              # true = reuse identical metric results from a previous run
+  write_cache: true
+  ignore_errors: false
+
+# Global cost caps. Every test that spends tokens in bulk reads its cap from here.
+limits:
+  max_goldens: 3                       # synthetic goldens per generation call (override: --max-goldens)
+  max_simulated_conversations: 2       # ConversationSimulator conversations
+  max_user_simulations: 3              # user turns per simulated conversation
+  redteam_attacks_per_vulnerability: 1 # attacks per vulnerability type
+  redteam_max_vulnerability_types: 1   # sub-types per vulnerability (keeps the run small)
+  benchmark_mmlu_tasks: [HIGH_SCHOOL_EUROPEAN_HISTORY]
+  benchmark_mmlu_n_shots: 3
+  benchmark_n_problems_per_task: 5
+  benchmark_truthfulqa_tasks: [SCIENCE]
+
+paths:
+  reports_dir: reports
+  policies_dir: data/policies
+  datasets_dir: data/datasets
+
+app:
+  rag_top_k: 3                  # how many policy documents the retriever returns
+  agent_max_steps: 5            # safety cap on the live tool-calling loop
